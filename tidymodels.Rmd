@@ -1,0 +1,199 @@
+---
+title: "Tidymodels"
+output: github_document
+---
+
+## Intro
+This notebook contains a walkthrough of the [tidymodels vignette](https://www.tidymodels.org/start/) and answers to the study questions provided by Jen Fisher for Oct 7th Stats Club! 
+This article walks thorugh the steps of creating statistical models using this package. 
+
+## Build a model
+
+For this section we will:
+ 
+* Check out our data (Sea urchins!)
+* learn how to specify and train models with different engines (parsnip)
+* understand the function designs
+
+```{r}
+library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
+library(tidyverse)
+# Helper packages
+library(readr)       # for importing data
+library(broom.mixed) # for converting bayesian models to tidy tibbles
+library(dotwhisker)  # for visualizing regression results
+```
+
+### The data
+
+This urchin data set is from [Constable(1993)](https://link.springer.com/article/10.1007/BF00349318), investigating how three different feeding regimes affect body size temporally. Starting urchin size likely affects growth increases based on food intake.
+
+```{r}
+urchins <- read_csv("https://tidymodels.org/start/models/urchins.csv") %>% 
+  setNames(c("food_regime","init_vol", "width")) %>%
+  mutate(food_regime = factor(food_regime, levels = c("Initial","Low","High")))
+```
+
+It's important to look at your data, understand your categories and variables, and visualize or plot your data
+
+```{r}
+head(urchins)
+summary(urchins)
+table(urchins$food_regime)
+```
+
+```{r}
+ggplot(urchins,
+       aes(x = init_vol, y = width, group = food_regime, color = food_regime)) +
+  geom_point()+
+  geom_smooth(method = lm, se = F)+
+  scale_color_viridis_d(option = "plasma", end = 0.7)
+```
+Here we see that for most food regimes, there is a higher suture width for organisms with higher initial weights. the differences in slope indicate that this is food_regime dependent. 
+
+### Build and fit a model
+
+We have one categorical and one continous variable, which a two-way ANOVA is suitable for. Based on the previous plot, we will need to include interactions
+
+```{r}
+width ~ init_vol * food_regime
+```
+
+We can use OLS an specify the functional form with the parsnip package. This would be alinear regression since we have a numeric outcome and an expectation of linearity
+
+```{r}
+linear_reg()
+```
+Here we could change the model engine, or software that can be used to fit or train the model and estimation method. Learn about other engines in the documentation. 
+
+```{r}
+lm_mod <- linear_reg()
+# saving the model object
+
+lm_fit <- lm_mod %>% 
+  fit(width ~ init_vol * food_regime, data = urchins)
+#estimate or train model
+```
+
+I want a data frame with standard column names for my results...but summary can't give that to me
+
+```{r}
+summary(lm_fit$fit)
+
+tidy(lm_fit)
+```
+Now I can generate plots directly from the the model object:
+
+```{r}
+tidy(lm_fit) %>% 
+  dwplot(dot_args = list(size = 2, color = "black"),
+         whisker_args = list(color = "black"),
+         vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2))
+```
+
+## Use a model to predict
+
+`lm_fit` has the `lm` model output that can be accessed with `lm_fit$fit`, but this model is useful (from parsnip) predictions. Let's make a plot of mean body size for urchins starting with an initial volume of 20ml. 
+
+```{r}
+new_points <- expand.grid(init_vol = 20, 
+                          food_regime = c("Initial", "Low", "High"))
+new_points
+
+# some subset example data
+```
+Now we will use `predict()` to find mean values at 20ml and confidence intervals. We can do this with other functions, but the beauty of `tidymodels` is if we change models, we can keep the same syntax!
+```{r}
+mean_pred <- predict(lm_fit, new_data = new_points)
+mean_pred
+```
+Now we can combine the original data with the predictions! Combine predictions with confidence intervals.
+
+```{r}
+conf_int_pred <- predict(lm_fit, 
+                         new_data = new_points, 
+                         type = "conf_int")
+conf_int_pred
+# generate confidence intervals
+
+plot_data <- 
+  new_points %>% 
+  bind_cols(mean_pred) %>% 
+  bind_cols(conf_int_pred)
+# combine predictions and confidence intervals
+
+ggplot(plot_data, aes(x = food_regime)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, 
+                    ymax = .pred_upper),
+                width = .2) + 
+  labs(y = "urchin size")
+# plot it!
+
+```
+## Model with different engine
+
+What if we end up wanting to use a different approach, for example a Bayesian analysis?
+After we set the prior distribution, all of the other steps are pretty much the same! Note the `set_engine` function provided that prior information. 
+
+```{r}
+# set the prior distribution
+prior_dist <- rstanarm::student_t(df = 1)
+
+set.seed(123)
+
+# make the parsnip model
+bayes_mod <-   
+  linear_reg() %>% 
+  set_engine("stan", 
+             prior_intercept = prior_dist, 
+             prior = prior_dist) 
+
+# train the model
+bayes_fit <- 
+  bayes_mod %>% 
+  fit(width ~ init_vol * food_regime, data = urchins)
+
+print(bayes_fit, digits = 5)
+
+tidy(bayes_fit, conf.int = TRUE)
+
+
+bayes_plot_data <- 
+  new_points %>% 
+  bind_cols(predict(bayes_fit, new_data = new_points)) %>% 
+  bind_cols(predict(bayes_fit, new_data = new_points, type = "conf_int"))
+
+ggplot(bayes_plot_data, aes(x = food_regime)) + 
+  geom_point(aes(y = .pred)) + 
+  geom_errorbar(aes(ymin = .pred_lower, ymax = .pred_upper), width = .2) + 
+  labs(y = "urchin size") + 
+  ggtitle("Bayesian model with t(1) prior distribution")
+```
+
+## Study Questions:
+1. What is tidymodels and what is it used for?
+  tidymodels is a meta-package for working with statistical models
+  
+2. Why tidymodels over other methods for building machine learning models?
+  standardizing the many iterations and tunings characteristic to ML models
+
+3. What type of models can you build with tidymodels?
+  All kinds! bayesian, lm, glm, DA models, mixed models (parsnip)
+  
+4. How can you evaluate models in tidymodels?
+Have two examples ready for discussion
+You can use resample. You can split your data set into training and test sets and resample the training set. Things can be evaluated and compared with ROC and accuracy metrics in `yardstick`
+
+
+5. What are the different packages in tidymodels?   
+  `parsnip` for building models
+  `rsample` for resampling and evaluating model prediction
+  `recipes` for pre-processing data
+  `tune` for optimizing hyperparameters from model 
+  `workflows` for building workkflows from pre-processing, modeling, to post-processing (string it together)
+  
+6. What do think are the three most interesting or most useful packages in tidymodels?
+  recipes, parsnips, workflow
+  
+7. Where could you apply tidymodels in your own research (or future research)?
