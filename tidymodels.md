@@ -38,7 +38,7 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
     ## ✖ dplyr::filter()  masks stats::filter()
     ## ✖ dplyr::lag()     masks stats::lag()
     ## ✖ recipes::step()  masks stats::step()
-    ## • Dig deeper into tidy modeling with R at https://www.tmwr.org
+    ## • Search for functions across packages at https://www.tidymodels.org/find/
 
 ``` r
 library(tidyverse)
@@ -134,10 +134,11 @@ ggplot(urchins,
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](tidymodels_files/figure-gfm/unnamed-chunk-4-1.png)<!-- --> Here we
-see that for most food regimes, there is a higher suture width for
-organisms with higher initial weights. the differences in slope indicate
-that this is food_regime dependent.
+![](tidymodels_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Here we see that for most food regimes, there is a higher suture width
+for organisms with higher initial weights. the differences in slope
+indicate that this is food_regime dependent.
 
 ### Build and fit a model
 
@@ -312,9 +313,11 @@ ggplot(plot_data, aes(x = food_regime)) +
 ## Model with different engine
 
 What if we end up wanting to use a different approach, for example a
-Bayesian analysis? After we set the prior distribution, all of the other
-steps are pretty much the same! Note the `set_engine` function provided
-that prior information.
+Bayesian analysis?
+
+After we set the prior distribution, all of the other steps are pretty
+much the same! Note the `set_engine` function provided that prior
+information.
 
 ``` r
 # set the prior distribution
@@ -392,31 +395,40 @@ ggplot(bayes_plot_data, aes(x = food_regime)) +
 
 ## Study Questions:
 
-1.  What is tidymodels and what is it used for? tidymodels is a
-    meta-package for working with statistical models
+1.  What is tidymodels and what is it used for?
+
+tidymodels is a meta-package for working with statistical models
 
 2.  Why tidymodels over other methods for building machine learning
-    models? standardizing the many iterations and tunings characteristic
-    to ML models
+    models?
 
-3.  What type of models can you build with tidymodels? All kinds!
-    bayesian, lm, glm, DA models, mixed models (parsnip)
+standardizing the many iterations and tunings characteristic to ML
+models
+
+3.  What type of models can you build with tidymodels?
+
+All kinds! bayesian, lm, glm, DA models, mixed models (parsnip)
 
 4.  How can you evaluate models in tidymodels? Have two examples ready
-    for discussion You can use resample. You can split your data set
-    into training and test sets and resample the training set. Things
-    can be evaluated and compared with ROC and accuracy metrics in
-    `yardstick`
+    for discussion.
 
-5.  What are the different packages in tidymodels?  
-    `parsnip` for building models `rsample` for resampling and
-    evaluating model prediction `recipes` for pre-processing data `tune`
-    for optimizing hyperparameters from model `workflows` for building
-    workkflows from pre-processing, modeling, to post-processing (string
-    it together)
+You can use resample. You can split your data set into training and test
+sets and resample the training set. Things can be evaluated and compared
+with ROC and accuracy metrics in `yardstick`
+
+5.  What are the different packages in tidymodels?
+
+-   `parsnip` for building models
+-   `rsample` for resampling and evaluating model prediction
+-   `recipes` for pre-processing data
+-   `tune` for optimizing hyperparameters from model
+-   `workflows` for building workkflows from pre-processing, modeling,
+    to post-processing (string it together)
 
 6.  What do think are the three most interesting or most useful packages
-    in tidymodels? recipes, parsnips, workflow
+    in tidymodels?
+
+recipes, parsnips, workflow
 
 7.  Where could you apply tidymodels in your own research (or future
     research)?
