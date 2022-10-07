@@ -22,8 +22,6 @@ For this section we will:
 library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
 ```
 
-    ## Warning: package 'tidymodels' was built under R version 4.1.2
-
     ## ── Attaching packages ────────────────────────────────────── tidymodels 1.0.0 ──
 
     ## ✔ broom        1.0.1     ✔ recipes      1.0.1
@@ -35,44 +33,12 @@ library(tidymodels)  # for the parsnip package, along with the rest of tidymodel
     ## ✔ parsnip      1.0.2     ✔ workflowsets 1.0.0
     ## ✔ purrr        0.3.4     ✔ yardstick    1.1.0
 
-    ## Warning: package 'broom' was built under R version 4.1.2
-
-    ## Warning: package 'dials' was built under R version 4.1.2
-
-    ## Warning: package 'scales' was built under R version 4.1.2
-
-    ## Warning: package 'dplyr' was built under R version 4.1.2
-
-    ## Warning: package 'ggplot2' was built under R version 4.1.2
-
-    ## Warning: package 'infer' was built under R version 4.1.2
-
-    ## Warning: package 'modeldata' was built under R version 4.1.2
-
-    ## Warning: package 'parsnip' was built under R version 4.1.2
-
-    ## Warning: package 'recipes' was built under R version 4.1.2
-
-    ## Warning: package 'rsample' was built under R version 4.1.2
-
-    ## Warning: package 'tibble' was built under R version 4.1.2
-
-    ## Warning: package 'tidyr' was built under R version 4.1.2
-
-    ## Warning: package 'tune' was built under R version 4.1.2
-
-    ## Warning: package 'workflows' was built under R version 4.1.2
-
-    ## Warning: package 'workflowsets' was built under R version 4.1.2
-
-    ## Warning: package 'yardstick' was built under R version 4.1.2
-
     ## ── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
     ## ✖ purrr::discard() masks scales::discard()
     ## ✖ dplyr::filter()  masks stats::filter()
     ## ✖ dplyr::lag()     masks stats::lag()
     ## ✖ recipes::step()  masks stats::step()
-    ## • Learn how to get started at https://www.tidymodels.org/start/
+    ## • Dig deeper into tidy modeling with R at https://www.tmwr.org
 
 ``` r
 library(tidyverse)
@@ -95,11 +61,6 @@ library(tidyverse)
 # Helper packages
 library(readr)       # for importing data
 library(broom.mixed) # for converting bayesian models to tidy tibbles
-```
-
-    ## Warning: package 'broom.mixed' was built under R version 4.1.2
-
-``` r
 library(dotwhisker)  # for visualizing regression results
 ```
 

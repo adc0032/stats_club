@@ -15,7 +15,7 @@ For this section we will:
 * learn how to specify and train models with different engines (parsnip)
 * understand the function designs
 
-```{r}
+```{r warning=FALSE}
 library(tidymodels)  # for the parsnip package, along with the rest of tidymodels
 library(tidyverse)
 # Helper packages
